@@ -6,8 +6,6 @@ from fastapi_utils.api_model import APIModel
 from fastapi_utils.enums import StrEnum
 from pydantic import constr, root_validator
 
-from models.bankcode import AnyBankCode
-
 
 class ProxyType(StrEnum):
     NATID = auto()
