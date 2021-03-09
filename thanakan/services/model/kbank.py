@@ -3,7 +3,8 @@ from typing import Optional
 from fastapi_utils.api_model import APIModel
 from loguru import logger
 from pydantic import root_validator
-from services.model.common import SlipData
+
+from thanakan.services.model.common import SlipData
 
 
 class VerifyResponse(APIModel):

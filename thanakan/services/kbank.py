@@ -16,6 +16,7 @@ from httpx_auth import OAuth2ClientCredentials
 from loguru import logger
 from thanakan.models.bankcode import AnyBankCode
 from thanakan.services.base import BankApi
+from thanakan.services.model.kbank import VerifyResponse
 
 bkk_tz = pytz.timezone("Asia/Bangkok")
 

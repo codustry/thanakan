@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 from decimal import Decimal
 from enum import auto
@@ -6,6 +6,8 @@ from enum import auto
 from fastapi_utils.api_model import APIModel
 from fastapi_utils.enums import StrEnum
 from pydantic import constr, root_validator
+
+from thanakan.models.bankcode import AnyBankCode, BankCode
 
 
 class ProxyType(StrEnum):
@@ -51,8 +53,8 @@ class End(APIModel):
 
 class SlipData(APIModel):
     language: Optional[Literal["EN", "TH"]]
-    receiving_bank: AnyBankCode
-    sending_bank: AnyBankCode
+    receiving_bank: Union[BankCode, AnyBankCode]
+    sending_bank: Union[BankCode, AnyBankCode]
     trans_ref: str
     trans_date: str
     trans_time: str

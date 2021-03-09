@@ -3,6 +3,7 @@ from .slip.qrcode import QRData
 try:
     from importlib.metadata import PackageNotFoundError, version
 except ImportError:  # pragma: no cover
+    # noinspection PyUnresolvedReferences,PyUnresolvedReferences,PyUnresolvedReferences
     from importlib_metadata import PackageNotFoundError, version
 
 

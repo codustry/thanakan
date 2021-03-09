@@ -7,8 +7,8 @@ import httpx
 from furl import furl
 from httpx._types import CertTypes
 from pydantic import constr, validate_arguments
-from services.base import BankApi
-from services.model.scb import (
+from thanakan.services.base import BankApi
+from thanakan.services.model.scb import (
     BaseResponse,
     CreateQR30Response,
     SCBCredentialsResponse,
