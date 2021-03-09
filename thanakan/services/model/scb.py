@@ -1,12 +1,11 @@
+from typing import Dict, List, Literal, Union
+
 from dataclasses import Field
 from datetime import datetime
 from decimal import Decimal
 from enum import IntEnum
-from typing import Dict, List, Literal, Union
 
 from fastapi_utils.api_model import APIModel
-
-
 from thanakan.models.bankcode import AnyBankCode, BankCode
 from thanakan.services.model.common import ProxyType, SlipData
 
@@ -15,6 +14,7 @@ class StatusCode(IntEnum):
     """
     only known status codes
     """
+
     success = 1000
 
 
@@ -25,7 +25,7 @@ class Status(APIModel):
 
 class CredentialsData(APIModel):
     access_token: str
-    token_type: Literal['Bearer'] = 'Bearer'
+    token_type: Literal["Bearer"] = "Bearer"
     expires_in: int
     expires_at: int
 
@@ -41,17 +41,20 @@ class SCBCredentialsResponse(BaseResponse):
 
 class QR30Data(APIModel):
     qr_raw_data: str
-    qr_image: str # seems like a base64 string
+    qr_image: str  # seems like a base64 string
 
 
 class CreateQR30Response(BaseResponse):
     data: QR30Data
 
+
 class VerifyResponse(BaseResponse):
     data: SlipData
 
+
 class TransactionInquiryResponse(BaseResponse):
     data: List[Dict]
+
 
 class WebhookBody(APIModel):
     transaction_date_and_time: datetime
@@ -66,7 +69,7 @@ class WebhookBody(APIModel):
     payee_proxy_id: str
     payee_account_number: str
     amount: Decimal
-    currency_code: str # wtf "764" thb?
+    currency_code: str  # wtf "764" thb?
     transaction_id: str
     transaction_type: str
     bill_payment_ref1: str

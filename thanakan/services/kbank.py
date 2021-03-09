@@ -3,9 +3,10 @@
 ref.
 https://apiportal.kasikornbank.com/product/public/Information/Slip%20Verification/Try%20API/d519307a-6d82-4e77-b9f4-dc74e542c742
 """
+from typing import Dict, Optional
+
 import uuid
 from datetime import datetime
-from typing import Optional, Dict
 
 import httpx
 import pytz
@@ -13,7 +14,6 @@ from furl import furl
 from httpx._types import CertTypes
 from httpx_auth import OAuth2ClientCredentials
 from loguru import logger
-
 from thanakan.models.bankcode import AnyBankCode
 from thanakan.services.base import BankApi
 

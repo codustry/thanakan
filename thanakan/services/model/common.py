@@ -1,6 +1,7 @@
+from typing import Literal, Optional
+
 from decimal import Decimal
 from enum import auto
-from typing import Literal, Optional
 
 from fastapi_utils.api_model import APIModel
 from fastapi_utils.enums import StrEnum

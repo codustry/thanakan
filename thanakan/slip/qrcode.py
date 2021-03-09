@@ -2,14 +2,15 @@
 ref. https://developer.scb/assets/documents/documentation/qr-payment/extracting-data-from-mini-qr.pdf
 beware! the "Sample data on mini QR" is poison, there is no such structure in real world.
 """
-from dataclasses import dataclass
-from enum import Enum
 from typing import List
 
-from PIL import Image
+from dataclasses import dataclass
+from enum import Enum
+
 from crccheck.crc import Crc16CcittFalse
+from PIL import Image
 from pydantic import BaseModel
-from pyzbar.pyzbar import decode, Decoded
+from pyzbar.pyzbar import Decoded, decode
 from pyzbar.wrapper import ZBarSymbol
 
 
