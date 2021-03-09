@@ -42,7 +42,6 @@ fastapi-utils = "^0.2.1"
 httpx-auth = "^0.8.0"
 loguru = "^0.5.3"
 google-cloud-documentai = "^0.3.0"
-Jinja2 = "^2.11.3"
 Pillow = "^8.1.0"
 pyzbar-x = "^0.2.1"
 
