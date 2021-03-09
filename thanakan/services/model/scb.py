@@ -57,7 +57,7 @@ class TransactionInquiryResponse(BaseResponse):
 
 
 class WebhookBody(APIModel):
-    transaction_date_and_time: datetime
+    transaction_date_and_time: datetime = Field(alias='transactionDateandTime')
     sending_bank_code: Union[BankCode, AnyBankCode]
     payer_name: str
     payer_proxy_type: ProxyType
@@ -69,7 +69,7 @@ class WebhookBody(APIModel):
     payee_proxy_id: str
     payee_account_number: str
     amount: Decimal
-    currency_code: str  # wtf "764" thb?
+    currency_code: str  # wtf "764", thb?
     transaction_id: str
     transaction_type: str
     bill_payment_ref1: str
