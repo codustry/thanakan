@@ -3,23 +3,54 @@
 ref.
 https://apiportal.kasikornbank.com/product/public/Information/Slip%20Verification/Try%20API/d519307a-6d82-4e77-b9f4-dc74e542c742
 """
-from typing import Dict, Optional
-
 import uuid
 from datetime import datetime
+from typing import Optional, Dict
 
 import httpx
 import pytz
 from furl import furl
 from httpx._types import CertTypes
-from httpx_auth import OAuth2ClientCredentials
+from httpx_auth import OAuth2ClientCredentials, GrantNotProvided, InvalidGrantRequest
 from loguru import logger
-from thanakan.models.bankcode import AnyBankCode
-from thanakan.services.base import BankApi
-from thanakan.services.model.kbank import VerifyResponse
+
+from jingdi.models.bankcode import AnyBankCode
+from jingdi.services.base import BankApi
 
 bkk_tz = pytz.timezone("Asia/Bangkok")
 
+def request_new_grant_with_post_kbank_special(
+    url: str, data, grant_name: str, client: httpx.Client
+) -> (str, int):
+    with client:
+        header = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        response = client.post(url, data=data, headers=header)
+
+        if response.is_error:
+            # As described in https://tools.ietf.org/html/rfc6749#section-5.2
+            raise InvalidGrantRequest(response)
+
+        content = response.json()
+
+    token = content.get(grant_name)
+    if not token:
+        raise GrantNotProvided(grant_name, content)
+    return token, content.get("expires_in")
+
+class KBankOAuth2ClientCredentials(OAuth2ClientCredentials):
+    def __init__(self, token_url: str, client_id: str, client_secret: str, *args, **kwargs):
+        super().__init__(token_url, client_id, client_secret, **kwargs)
+        self.data = "grant_type=client_credentials"
+
+    def request_new_token(self) -> tuple:
+        # As described in https://tools.ietf.org/html/rfc6749#section-4.3.3
+        token, expires_in = request_new_grant_with_post_kbank_special(
+            self.token_url, self.data, self.token_field_name, self.client
+        )
+        # Handle both Access and Bearer tokens
+        return (self.state, token, expires_in) if expires_in else (self.state, token)
 
 class KBankAPI(BankApi):
     creds: Optional[Dict] = None
@@ -38,7 +69,7 @@ class KBankAPI(BankApi):
         auth_url = self.base_url / "oauth/token"
         client = httpx.Client(cert=self.cert)
         # change this to async with https://docs.authlib.org/en/latest/client/httpx.html
-        auth = OAuth2ClientCredentials(
+        auth = KBankOAuth2ClientCredentials(
             auth_url.url,
             client_id=self.consumer_id,
             client_secret=self.consumer_secret,
