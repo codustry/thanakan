@@ -623,3 +623,16 @@ google_app_creds.json
 research/kbank_api_test/.ipynb_checkpoints/
 
 .idea/
+
+.ipynb_checkpoints
+tests/test_kbank_api/slip-test/1.jpg
+tests/test_kbank_api/slip-test/2.jpg
+tests/test_kbank_api/slip-test/3.jpg
+tests/test_kbank_api/slip-test/4.1.jpg
+tests/test_kbank_api/slip-test/4.2.jpg
+tests/test_kbank_api/slip-test/5.1.jpg
+tests/test_kbank_api/slip-test/5.2.jpg
+tests/test_kbank_api/slip-test/5.3.jpg
+tests/test_kbank_api/slip-test/6.1.jpg
+tests/test_kbank_api/slip-test/6.2.jpg
+tests/test_kbank_api/slip-test/6.3.jpg
