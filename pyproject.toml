@@ -6,7 +6,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "thanakan"
-version = "0.1.3"
+version = "0.1.4"
 description = "Awesome `thanakan` is a Python cli/package created with https://github.com/TezRomacH/python-package-template"
 readme = "README.md"
 authors = [
