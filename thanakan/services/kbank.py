@@ -3,17 +3,21 @@
 ref.
 https://apiportal.kasikornbank.com/product/public/Information/Slip%20Verification/Try%20API/d519307a-6d82-4e77-b9f4-dc74e542c742
 """
+from typing import Dict, Optional, Tuple
+
 import uuid
 from datetime import datetime
-from typing import Optional, Dict, Tuple
 
 import httpx
 import pytz
 from furl import furl
 from httpx._types import CertTypes
-from httpx_auth import OAuth2ClientCredentials, GrantNotProvided, InvalidGrantRequest
+from httpx_auth import (
+    GrantNotProvided,
+    InvalidGrantRequest,
+    OAuth2ClientCredentials,
+)
 from loguru import logger
-
 from thanakan.services.base import BankApi
 from thanakan.services.model.kbank import VerifyResponse
 
@@ -21,7 +25,14 @@ bkk_tz = pytz.timezone("Asia/Bangkok")
 
 
 class KBankOAuth2ClientCredentials(OAuth2ClientCredentials):
-    def __init__(self, token_url: str, client_id: str, client_secret: str, *args, **kwargs):
+    def __init__(
+        self,
+        token_url: str,
+        client_id: str,
+        client_secret: str,
+        *args,
+        **kwargs,
+    ):
         super().__init__(token_url, client_id, client_secret, **kwargs)
         self.data = "grant_type=client_credentials"
 
@@ -29,9 +40,7 @@ class KBankOAuth2ClientCredentials(OAuth2ClientCredentials):
         self, url: str, data, grant_name: str, client: httpx.Client
     ) -> Tuple[str, int]:
         with client:
-            header = {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
+            header = {"Content-Type": "application/x-www-form-urlencoded"}
             response = client.post(url, data=data, headers=header)
 
             if response.is_error:
@@ -51,7 +60,12 @@ class KBankOAuth2ClientCredentials(OAuth2ClientCredentials):
             self.token_url, self.data, self.token_field_name, self.client
         )
         # Handle both Access and Bearer tokens
-        return (self.state, token, expires_in) if expires_in else (self.state, token)
+        return (
+            (self.state, token, expires_in)
+            if expires_in
+            else (self.state, token)
+        )
+
 
 class KBankAPI(BankApi):
     creds: Optional[Dict] = None
@@ -77,7 +91,7 @@ class KBankAPI(BankApi):
             client_secret=self.consumer_secret,
             client=client,
         )
-        
+
         self.client = httpx.AsyncClient(
             base_url=base_url, cert=self.cert, auth=auth
         )
@@ -122,12 +136,16 @@ class KBankAPI(BankApi):
                 return json
             try:
                 response = VerifyResponse(**json)
-                if response.status_message.strip() != 'SUCCESS':
-                    logger.warning("Not Success: {} {}",response.status_code,response.status_message)
+                if response.status_message.strip() != "SUCCESS":
+                    logger.warning(
+                        "Not Success: {} {}",
+                        response.status_code,
+                        response.status_message,
+                    )
                 return response
             except Exception as e:
                 logger.debug("data is {}", json)
-                raise Exception('Could not parse the json') from e
+                raise Exception("Could not parse the json") from e
         else:
             return r
 
@@ -146,11 +164,15 @@ class KBankAPI(BankApi):
                 return json
             try:
                 response = VerifyResponse(**json)
-                if response.status_message.strip() != 'SUCCESS':
-                    logger.warning("Not Success: {} {}",response.status_code,response.status_message)
+                if response.status_message.strip() != "SUCCESS":
+                    logger.warning(
+                        "Not Success: {} {}",
+                        response.status_code,
+                        response.status_message,
+                    )
                 return response
             except Exception as e:
                 logger.debug("data is {}", json)
-                raise Exception('Could not parse the json') from e
+                raise Exception("Could not parse the json") from e
         else:
             return r
