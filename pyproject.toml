@@ -6,7 +6,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "thanakan"
-version = "0.1.1"
+version = "0.1.2"
 description = "Awesome `thanakan` is a Python cli/package created with https://github.com/TezRomacH/python-package-template"
 readme = "README.md"
 authors = [
@@ -44,6 +44,8 @@ loguru = "^0.5.3"
 google-cloud-documentai = "^0.3.0"
 Pillow = "^8.1.0"
 pyzbar-x = "^0.2.1"
+onepasswordconnectsdk = "^1.1.0"
+google-cloud-secret-manager = "^2.7.2"
 
 [tool.poetry.dev-dependencies]
 darglint = "^1.5.4"
@@ -59,6 +61,7 @@ pydocstyle = "^5.0.2"
 pre-commit = "^2.7.1"
 pytest-asyncio = "^0.14.0"
 jupyterlab = "^3.0.8"
+pytest-docker-compose = "^3.2.1"
 
 [tool.black]
 # https://github.com/psf/black
