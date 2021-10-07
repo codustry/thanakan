@@ -5,7 +5,7 @@ https://apiportal.kasikornbank.com/product/public/Information/Slip%20Verificatio
 """
 import uuid
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 
 import httpx
 import pytz
@@ -14,39 +14,40 @@ from httpx._types import CertTypes
 from httpx_auth import OAuth2ClientCredentials, GrantNotProvided, InvalidGrantRequest
 from loguru import logger
 
-from jingdi.models.bankcode import AnyBankCode
-from jingdi.services.base import BankApi
+from thanakan.services.base import BankApi
+from thanakan.services.model.kbank import VerifyResponse
 
 bkk_tz = pytz.timezone("Asia/Bangkok")
 
-def request_new_grant_with_post_kbank_special(
-    url: str, data, grant_name: str, client: httpx.Client
-) -> (str, int):
-    with client:
-        header = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-        response = client.post(url, data=data, headers=header)
-
-        if response.is_error:
-            # As described in https://tools.ietf.org/html/rfc6749#section-5.2
-            raise InvalidGrantRequest(response)
-
-        content = response.json()
-
-    token = content.get(grant_name)
-    if not token:
-        raise GrantNotProvided(grant_name, content)
-    return token, content.get("expires_in")
 
 class KBankOAuth2ClientCredentials(OAuth2ClientCredentials):
     def __init__(self, token_url: str, client_id: str, client_secret: str, *args, **kwargs):
         super().__init__(token_url, client_id, client_secret, **kwargs)
         self.data = "grant_type=client_credentials"
 
+    def request_new_grant_with_post_kbank_special(
+        self, url: str, data, grant_name: str, client: httpx.Client
+    ) -> Tuple[str, int]:
+        with client:
+            header = {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+            response = client.post(url, data=data, headers=header)
+
+            if response.is_error:
+                # As described in https://tools.ietf.org/html/rfc6749#section-5.2
+                raise InvalidGrantRequest(response)
+
+            content = response.json()
+
+        token = content.get(grant_name)
+        if not token:
+            raise GrantNotProvided(grant_name, content)
+        return token, content.get("expires_in")
+
     def request_new_token(self) -> tuple:
         # As described in https://tools.ietf.org/html/rfc6749#section-4.3.3
-        token, expires_in = request_new_grant_with_post_kbank_special(
+        token, expires_in = self.request_new_grant_with_post_kbank_special(
             self.token_url, self.data, self.token_field_name, self.client
         )
         # Handle both Access and Bearer tokens
@@ -68,6 +69,7 @@ class KBankAPI(BankApi):
         self.base_url = furl(base_url)
         auth_url = self.base_url / "oauth/token"
         client = httpx.Client(cert=self.cert)
+
         # change this to async with https://docs.authlib.org/en/latest/client/httpx.html
         auth = KBankOAuth2ClientCredentials(
             auth_url.url,
@@ -75,6 +77,7 @@ class KBankAPI(BankApi):
             client_secret=self.consumer_secret,
             client=client,
         )
+        
         self.client = httpx.AsyncClient(
             base_url=base_url, cert=self.cert, auth=auth
         )
@@ -84,6 +87,9 @@ class KBankAPI(BankApi):
         )
 
     async def get_token(self):
+        """
+        This is normally handle by `KBankOAuth2ClientCredentials` automatically. This is for dev to call.
+        """
 
         body = {"grant_type": "client_credentials"}
 
@@ -101,7 +107,7 @@ class KBankAPI(BankApi):
         else:
             return r
 
-    async def verify_slip(self, sending_bank_id, trans_ref, *, raw=True):
+    async def verify_slip(self, sending_bank_id, trans_ref, *, raw=False):
         body = {
             "rqUID": uuid.uuid4().hex,
             "rqDt": datetime.now(tz=bkk_tz).isoformat(),
@@ -115,14 +121,17 @@ class KBankAPI(BankApi):
             if raw:
                 return json
             try:
-                return VerifyResponse(**json)
+                response = VerifyResponse(**json)
+                if response.status_message.strip() != 'SUCCESS':
+                    logger.warning("Not Success: {} {}",response.status_code,response.status_message)
+                return response
             except Exception as e:
                 logger.debug("data is {}", json)
-                raise e
+                raise Exception('Could not parse the json') from e
         else:
             return r
 
-    def verify_slip_sync(self, sending_bank_id, trans_ref, *, raw=True):
+    def verify_slip_sync(self, sending_bank_id, trans_ref, *, raw=False):
         body = {
             "rqUID": uuid.uuid4().hex,
             "rqDt": datetime.now(tz=bkk_tz).isoformat(),
@@ -136,9 +145,12 @@ class KBankAPI(BankApi):
             if raw:
                 return json
             try:
-                return VerifyResponse(**json)
+                response = VerifyResponse(**json)
+                if response.status_message.strip() != 'SUCCESS':
+                    logger.warning("Not Success: {} {}",response.status_code,response.status_message)
+                return response
             except Exception as e:
                 logger.debug("data is {}", json)
-                raise e
+                raise Exception('Could not parse the json') from e
         else:
             return r
