@@ -8,6 +8,7 @@ from thanakan.services.model.common import SlipData
 
 
 class VerifyResponse(APIModel):
+
     rqUID: str
     status_code: str
     status_message: str
