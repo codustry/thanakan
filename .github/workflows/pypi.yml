@@ -22,6 +22,6 @@ jobs:
           virtualenvs-in-project: false
 
       - name: publish to pypi
-          env:
-            POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-          run: poetry publish --build
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+        run: poetry publish --build
