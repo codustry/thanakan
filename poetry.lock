@@ -321,7 +321,7 @@ python-versions = "*"
 
 [[package]]
 name = "docker"
-version = "5.0.2"
+version = "5.0.3"
 description = "A Python library for the Docker Engine API."
 category = "dev"
 optional = false
@@ -911,7 +911,7 @@ test = ["coverage", "pytest (>=6.0)", "pytest-cov", "pytest-mock", "requests", "
 
 [[package]]
 name = "jupyterlab"
-version = "3.1.17"
+version = "3.1.18"
 description = "JupyterLab computational environment"
 category = "dev"
 optional = false
@@ -2021,7 +2021,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a1a4e43d21587a9a604cb0c4a6d0c11dfa117f1134b8db035a780df9745cd883"
+content-hash = "d22466f071fc23c9a772abab84389cefb07c56d7b660699f2b6f1a5ce74faa0d"
 
 [metadata.files]
 anyio = [
@@ -2234,8 +2234,8 @@ distro = [
     {file = "distro-1.6.0.tar.gz", hash = "sha256:83f5e5a09f9c5f68f60173de572930effbcc0287bb84fdc4426cb4168c088424"},
 ]
 docker = [
-    {file = "docker-5.0.2-py2.py3-none-any.whl", hash = "sha256:9b17f0723d83c1f3418d2aa17bf90b24dbe97deda06208dd4262fa30a6ee87eb"},
-    {file = "docker-5.0.2.tar.gz", hash = "sha256:21ec4998e90dff7a7aaaa098ca8d839c7de412b89e6f6c30908372d58fecf663"},
+    {file = "docker-5.0.3-py2.py3-none-any.whl", hash = "sha256:7a79bb439e3df59d0a72621775d600bc8bc8b422d285824cb37103eab91d1ce0"},
+    {file = "docker-5.0.3.tar.gz", hash = "sha256:d916a26b62970e7c2f554110ed6af04c7ccff8e9f81ad17d0d40c75637e227fb"},
 ]
 docker-compose = [
     {file = "docker-compose-1.29.2.tar.gz", hash = "sha256:4c8cd9d21d237412793d18bd33110049ee9af8dab3fe2c213bbd0733959b09b7"},
@@ -2485,8 +2485,8 @@ jupyter-server = [
     {file = "jupyter_server-1.11.1.tar.gz", hash = "sha256:ab7ab1cc38512f15026cbcbb96300fb46ec8b24aa162263d9edd00e0a749b1e8"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-3.1.17-py3-none-any.whl", hash = "sha256:63e3ee10db0c41a95d5dc31d6e10646c1aa1e44f85dc83003622558a236e8e2e"},
-    {file = "jupyterlab-3.1.17.tar.gz", hash = "sha256:7e829cedce4fec676fb9d83850805df9e563b3ca7f20f70bd2ea177a462b7a78"},
+    {file = "jupyterlab-3.1.18-py3-none-any.whl", hash = "sha256:3bedbc732ae86b616bd5c7855a6d071fe76ad47186378d36df77f4fc58ae322a"},
+    {file = "jupyterlab-3.1.18.tar.gz", hash = "sha256:a43733acc3729557fc4758cff55652e52896e42c64c1f12540656ae7f298b806"},
 ]
 jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl", hash = "sha256:abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"},
