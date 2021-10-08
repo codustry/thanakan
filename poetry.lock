@@ -321,7 +321,7 @@ python-versions = "*"
 
 [[package]]
 name = "docker"
-version = "5.0.2"
+version = "5.0.3"
 description = "A Python library for the Docker Engine API."
 category = "dev"
 optional = false
@@ -485,24 +485,21 @@ typing-extensions = {version = ">=3.7.4.3", markers = "python_version < \"3.10\"
 
 [[package]]
 name = "google-api-core"
-version = "1.31.3"
+version = "2.1.0"
 description = "Google API client core library"
 category = "main"
 optional = false
-python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
+python-versions = ">=3.6"
 
 [package.dependencies]
-google-auth = ">=1.25.0,<2.0dev"
+google-auth = ">=1.25.0,<3.0dev"
 googleapis-common-protos = ">=1.6.0,<2.0dev"
-grpcio = {version = ">=1.29.0,<2.0dev", optional = true, markers = "extra == \"grpc\""}
-packaging = ">=14.3"
-protobuf = ">=3.12.0,<3.18.0"
-pytz = "*"
+grpcio = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
+protobuf = ">=3.12.0"
 requests = ">=2.18.0,<3.0.0dev"
-six = ">=1.13.0"
 
 [package.extras]
-grpc = ["grpcio (>=1.29.0,<2.0dev)"]
+grpc = ["grpcio (>=1.33.2,<2.0dev)"]
 grpcgcp = ["grpcio-gcp (>=0.2.2)"]
 grpcio-gcp = ["grpcio-gcp (>=0.2.2)"]
 
@@ -527,14 +524,15 @@ reauth = ["pyu2f (>=0.1.5)"]
 
 [[package]]
 name = "google-cloud-documentai"
-version = "0.3.0"
+version = "1.0.0"
 description = ""
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-google-api-core = {version = ">=1.22.0,<2.0.0dev", extras = ["grpc"]}
+google-api-core = {version = ">=1.26.0,<3.0.0dev", extras = ["grpc"]}
+packaging = ">=14.3"
 proto-plus = ">=1.10.0"
 
 [[package]]
@@ -1607,7 +1605,7 @@ cli = ["click (>=5.0)"]
 name = "pytz"
 version = "2021.3"
 description = "World timezone definitions, modern and historical"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -2021,7 +2019,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a1a4e43d21587a9a604cb0c4a6d0c11dfa117f1134b8db035a780df9745cd883"
+content-hash = "3877186293b68fe52a9db0105e8ff959b148ead974ffcecc49a79a222e7407b9"
 
 [metadata.files]
 anyio = [
@@ -2234,8 +2232,8 @@ distro = [
     {file = "distro-1.6.0.tar.gz", hash = "sha256:83f5e5a09f9c5f68f60173de572930effbcc0287bb84fdc4426cb4168c088424"},
 ]
 docker = [
-    {file = "docker-5.0.2-py2.py3-none-any.whl", hash = "sha256:9b17f0723d83c1f3418d2aa17bf90b24dbe97deda06208dd4262fa30a6ee87eb"},
-    {file = "docker-5.0.2.tar.gz", hash = "sha256:21ec4998e90dff7a7aaaa098ca8d839c7de412b89e6f6c30908372d58fecf663"},
+    {file = "docker-5.0.3-py2.py3-none-any.whl", hash = "sha256:7a79bb439e3df59d0a72621775d600bc8bc8b422d285824cb37103eab91d1ce0"},
+    {file = "docker-5.0.3.tar.gz", hash = "sha256:d916a26b62970e7c2f554110ed6af04c7ccff8e9f81ad17d0d40c75637e227fb"},
 ]
 docker-compose = [
     {file = "docker-compose-1.29.2.tar.gz", hash = "sha256:4c8cd9d21d237412793d18bd33110049ee9af8dab3fe2c213bbd0733959b09b7"},
@@ -2280,16 +2278,16 @@ gitpython = [
     {file = "GitPython-3.1.24.tar.gz", hash = "sha256:df83fdf5e684fef7c6ee2c02fc68a5ceb7e7e759d08b694088d0cacb4eba59e5"},
 ]
 google-api-core = [
-    {file = "google-api-core-1.31.3.tar.gz", hash = "sha256:4b7ad965865aef22afa4aded3318b8fa09b20bcc7e8dbb639a3753cf60af08ea"},
-    {file = "google_api_core-1.31.3-py2.py3-none-any.whl", hash = "sha256:f52c708ab9fd958862dea9ac94d9db1a065608073fe583c3b9c18537b177f59a"},
+    {file = "google-api-core-2.1.0.tar.gz", hash = "sha256:5ec27b942b34d04559cbf3674430bb83fc3d74e7d32b8bbd31c4466e71740b83"},
+    {file = "google_api_core-2.1.0-py2.py3-none-any.whl", hash = "sha256:c344e1aacd8330527c5130bdfe03118d8859ce798bcf0e5d23770ab6873e0615"},
 ]
 google-auth = [
     {file = "google-auth-1.35.0.tar.gz", hash = "sha256:b7033be9028c188ee30200b204ea00ed82ea1162e8ac1df4aa6ded19a191d88e"},
     {file = "google_auth-1.35.0-py2.py3-none-any.whl", hash = "sha256:997516b42ecb5b63e8d80f5632c1a61dddf41d2a4c2748057837e06e00014258"},
 ]
 google-cloud-documentai = [
-    {file = "google-cloud-documentai-0.3.0.tar.gz", hash = "sha256:ff16a7b850385d71842195367e6aa626d2843574e02d3745ce60fe42d493349f"},
-    {file = "google_cloud_documentai-0.3.0-py2.py3-none-any.whl", hash = "sha256:26ff8e19c2fec3da8d36c99bbb1c7a34f9cf910ffa063f888882f071a826643e"},
+    {file = "google-cloud-documentai-1.0.0.tar.gz", hash = "sha256:e2285387de7d9b71de679b34cd92d68fc19ade57a846dd65a18f43503d6765ee"},
+    {file = "google_cloud_documentai-1.0.0-py2.py3-none-any.whl", hash = "sha256:aa6708da658cad56e5026104d867522a5fc448b8bb575b4258af12538c09b033"},
 ]
 google-cloud-secret-manager = [
     {file = "google-cloud-secret-manager-2.7.2.tar.gz", hash = "sha256:6508a260ea273de0ff17d0bf66a3f93009a9b02ace7736486f70a91789c3e34a"},
