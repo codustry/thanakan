@@ -13,11 +13,18 @@ class KbankSlipVerifyResponse(APIModel):
     status_message: str
     data: Optional[SlipData]
 
+    @property
+    def status(self):
+        return f"{self.status_code}: {self.status_message}"
+
     @root_validator(pre=True)
     def fail_make_data_none(cls, values):
+        """
+        This is to prevent expected consequnece validations fail in the `SlipData` .
+        """
         if values["statusCode"] != "0000":
             logger.warning(
-                "request not success, status {}, msg {}",
+                "request not success, with Error {}: {}",
                 values["statusCode"],
                 values["statusMessage"],
             )
