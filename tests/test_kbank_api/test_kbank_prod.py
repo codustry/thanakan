@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 from PIL import Image
-from thanakan import QRData
+from thanakan import SlipQRData
 from thanakan.services.kbank import KBankAPI
 
 
@@ -22,7 +22,7 @@ async def test_main(cert, consumer_id, consumer_secret, file):
     result_path = Path("tests/test_kbank_api/result")
     result_path.mkdir(exist_ok=True)
 
-    qr_data = QRData.create_from_image(Image.open(file))
+    qr_data = SlipQRData.create_from_image(Image.open(file))
 
     response = await api.verify_slip(
         qr_data.payload.sending_bank_id, qr_data.payload.transaction_ref_id
