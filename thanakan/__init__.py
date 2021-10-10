@@ -1,4 +1,5 @@
-from .slip.qrcode import QRData
+from .slip import SlipQRData
+from .services import KBankAPI
 
 try:
     from importlib.metadata import PackageNotFoundError, version
