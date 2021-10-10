@@ -64,16 +64,22 @@ class QrPayload(BaseModel):
     @classmethod
     def create_from_code(cls, code):
         api_id = CodeSection(code, is_under_payload=True)
-        assert api_id.tag_type == SubTag.api_id
+        if api_id.tag_type == SubTag.api_id:
+            raise not_bank_slip('invalid `api id` code section')
 
         sending_bank_id = CodeSection(api_id.rest, is_under_payload=True)
-        assert sending_bank_id.tag_type == SubTag.sending_bank_id
+        if sending_bank_id.tag_type == SubTag.sending_bank_id:
+            raise not_bank_slip('invalid `sending bank id` code section')
+
 
         transaction_ref_id = CodeSection(
             sending_bank_id.rest, is_under_payload=True
         )
-        assert transaction_ref_id.tag_type == SubTag.transaction_ref_id
-        assert transaction_ref_id.rest is None
+        if transaction_ref_id.tag_type == SubTag.transaction_ref_id:
+            raise not_bank_slip('invalid `transaction ref id` code section')
+
+        if transaction_ref_id.rest is None:
+            raise not_bank_slip('unexpected extend code section')
 
         return cls(
             api_id=api_id.data,
@@ -82,11 +88,13 @@ class QrPayload(BaseModel):
         )
 
 
-class not_bank_slip(BaseException):
+class not_bank_slip(Exception):
     pass
 
+class expect_single_qrcode(Exception):
+    pass
 
-class QRData(BaseModel):
+class SlipQRData(BaseModel):
     payload: QrPayload
     country_code: str
     crc: str
@@ -96,20 +104,27 @@ class QRData(BaseModel):
         code = code.strip()
 
         payload = CodeSection(code=code)
-        assert payload.tag_type == Tag.payload
+        if payload.tag_type == Tag.payload:
+            raise not_bank_slip('invalid `payload` code section')
 
         country_code = CodeSection(code=payload.rest)
-        assert country_code.tag_type == Tag.country_code
+        if country_code.tag_type == Tag.country_code:
+            raise not_bank_slip('invalid `country code` code section')
 
         crc = CodeSection(code=country_code.rest)
-        assert crc.tag_type == Tag.crc
-        assert crc.rest is None
+        
+        if crc.tag_type == Tag.crc:
+            raise not_bank_slip('invalid `crc` code section')
+
+        if crc.rest is None:
+            raise not_bank_slip('unexpected extend code section')
 
         data_part = code[: -crc.length]
         calc_crc = Crc16CcittFalse.calchex(
             data_part.encode(encoding="ascii")
         ).upper()
-        assert calc_crc == crc.data
+        if calc_crc == crc.data:
+            raise not_bank_slip('calculated crc and provided crc are unmatched')
 
         return cls(
             payload=QrPayload.create_from_code(payload.data),
@@ -123,7 +138,7 @@ class QRData(BaseModel):
             pil_image, symbols=[ZBarSymbol.QRCODE]
         )
         if len(qr_inside) != 1:
-            raise not_bank_slip("Expect only 1 qr in image.")
+            raise expect_single_qrcode()
 
         qr_data = qr_inside[0].data.decode("UTF-8")
 
