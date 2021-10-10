@@ -64,21 +64,21 @@ class QrPayload(BaseModel):
     @classmethod
     def create_from_code(cls, code):
         api_id = CodeSection(code, is_under_payload=True)
-        if api_id.tag_type == SubTag.api_id:
+        if not api_id.tag_type == SubTag.api_id:
             raise not_bank_slip('invalid `api id` code section')
 
         sending_bank_id = CodeSection(api_id.rest, is_under_payload=True)
-        if sending_bank_id.tag_type == SubTag.sending_bank_id:
+        if not sending_bank_id.tag_type == SubTag.sending_bank_id:
             raise not_bank_slip('invalid `sending bank id` code section')
 
 
         transaction_ref_id = CodeSection(
             sending_bank_id.rest, is_under_payload=True
         )
-        if transaction_ref_id.tag_type == SubTag.transaction_ref_id:
+        if not transaction_ref_id.tag_type == SubTag.transaction_ref_id:
             raise not_bank_slip('invalid `transaction ref id` code section')
 
-        if transaction_ref_id.rest is None:
+        if not transaction_ref_id.rest is None:
             raise not_bank_slip('unexpected extend code section')
 
         return cls(
@@ -104,26 +104,26 @@ class SlipQRData(BaseModel):
         code = code.strip()
 
         payload = CodeSection(code=code)
-        if payload.tag_type == Tag.payload:
+        if not payload.tag_type == Tag.payload:
             raise not_bank_slip('invalid `payload` code section')
 
         country_code = CodeSection(code=payload.rest)
-        if country_code.tag_type == Tag.country_code:
+        if not country_code.tag_type == Tag.country_code:
             raise not_bank_slip('invalid `country code` code section')
 
         crc = CodeSection(code=country_code.rest)
         
-        if crc.tag_type == Tag.crc:
+        if not crc.tag_type == Tag.crc:
             raise not_bank_slip('invalid `crc` code section')
 
-        if crc.rest is None:
+        if not crc.rest is None:
             raise not_bank_slip('unexpected extend code section')
 
         data_part = code[: -crc.length]
         calc_crc = Crc16CcittFalse.calchex(
             data_part.encode(encoding="ascii")
         ).upper()
-        if calc_crc == crc.data:
+        if not calc_crc == crc.data:
             raise not_bank_slip('calculated crc and provided crc are unmatched')
 
         return cls(
