@@ -19,7 +19,7 @@ from httpx_auth import (
 )
 from loguru import logger
 from thanakan.services.base import BankApi
-from thanakan.services.model.kbank import VerifyResponse
+from thanakan.services.model.kbank import KbankSlipVerifyResponse
 
 bkk_tz = pytz.timezone("Asia/Bangkok")
 
@@ -135,7 +135,7 @@ class KBankAPI(BankApi):
             if raw:
                 return json
             try:
-                response = VerifyResponse(**json)
+                response = KbankSlipVerifyResponse(**json)
                 if response.status_message.strip() != "SUCCESS":
                     logger.warning(
                         "Not Success: {} {}",
@@ -163,7 +163,7 @@ class KBankAPI(BankApi):
             if raw:
                 return json
             try:
-                response = VerifyResponse(**json)
+                response = KbankSlipVerifyResponse(**json)
                 if response.status_message.strip() != "SUCCESS":
                     logger.warning(
                         "Not Success: {} {}",

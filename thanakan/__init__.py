@@ -1,5 +1,5 @@
-from .slip import SlipQRData
 from .services import KBankAPI
+from .slip import SlipQRData
 
 try:
     from importlib.metadata import PackageNotFoundError, version

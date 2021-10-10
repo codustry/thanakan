@@ -6,7 +6,7 @@ from pydantic import root_validator
 from thanakan.services.model.common import SlipData
 
 
-class VerifyResponse(APIModel):
+class KbankSlipVerifyResponse(APIModel):
 
     rqUID: str
     status_code: str

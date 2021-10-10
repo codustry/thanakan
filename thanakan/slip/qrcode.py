@@ -65,21 +65,20 @@ class QrPayload(BaseModel):
     def create_from_code(cls, code):
         api_id = CodeSection(code, is_under_payload=True)
         if not api_id.tag_type == SubTag.api_id:
-            raise not_bank_slip('invalid `api id` code section')
+            raise not_bank_slip("invalid `api id` code section")
 
         sending_bank_id = CodeSection(api_id.rest, is_under_payload=True)
         if not sending_bank_id.tag_type == SubTag.sending_bank_id:
-            raise not_bank_slip('invalid `sending bank id` code section')
-
+            raise not_bank_slip("invalid `sending bank id` code section")
 
         transaction_ref_id = CodeSection(
             sending_bank_id.rest, is_under_payload=True
         )
         if not transaction_ref_id.tag_type == SubTag.transaction_ref_id:
-            raise not_bank_slip('invalid `transaction ref id` code section')
+            raise not_bank_slip("invalid `transaction ref id` code section")
 
         if not transaction_ref_id.rest is None:
-            raise not_bank_slip('unexpected extend code section')
+            raise not_bank_slip("unexpected extend code section")
 
         return cls(
             api_id=api_id.data,
@@ -91,8 +90,10 @@ class QrPayload(BaseModel):
 class not_bank_slip(Exception):
     pass
 
+
 class expect_single_qrcode(Exception):
     pass
+
 
 class SlipQRData(BaseModel):
     payload: QrPayload
@@ -105,26 +106,26 @@ class SlipQRData(BaseModel):
 
         payload = CodeSection(code=code)
         if not payload.tag_type == Tag.payload:
-            raise not_bank_slip('invalid `payload` code section')
+            raise not_bank_slip("invalid `payload` code section")
 
         country_code = CodeSection(code=payload.rest)
         if not country_code.tag_type == Tag.country_code:
-            raise not_bank_slip('invalid `country code` code section')
+            raise not_bank_slip("invalid `country code` code section")
 
         crc = CodeSection(code=country_code.rest)
-        
+
         if not crc.tag_type == Tag.crc:
-            raise not_bank_slip('invalid `crc` code section')
+            raise not_bank_slip("invalid `crc` code section")
 
         if not crc.rest is None:
-            raise not_bank_slip('unexpected extend code section')
+            raise not_bank_slip("unexpected extend code section")
 
         data_part = code[: -crc.length]
         calc_crc = Crc16CcittFalse.calchex(
             data_part.encode(encoding="ascii")
         ).upper()
         if not calc_crc == crc.data:
-            raise not_bank_slip('calculated crc and provided crc are unmatched')
+            raise not_bank_slip("calculated crc and provided crc are unmatched")
 
         return cls(
             payload=QrPayload.create_from_code(payload.data),
