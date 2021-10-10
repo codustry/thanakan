@@ -25,11 +25,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: latest
-          virtualenvs-create: false
-          virtualenvs-in-project: false
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: false
+        virtualenvs-in-project: false
 
     - name: Set up cache
       uses: actions/cache@v2
