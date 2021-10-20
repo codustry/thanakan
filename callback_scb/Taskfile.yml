@@ -8,3 +8,4 @@ tasks:
     cmds:
       - keybase decrypt -i cod.json.encrypted.saltpack -o cod.json
       - keybase decrypt -i cot.json.encrypted.saltpack -o cot.json
+  turnel: ngrok http --region=us --hostname=codustry.ngrok.io 8000
