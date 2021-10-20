@@ -636,3 +636,4 @@ tests/test_kbank_api/slip-test/5.3.jpg
 tests/test_kbank_api/slip-test/6.1.jpg
 tests/test_kbank_api/slip-test/6.2.jpg
 tests/test_kbank_api/slip-test/6.3.jpg
+callback_scb/sample/*.json
