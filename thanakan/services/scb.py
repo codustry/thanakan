@@ -1,63 +1,125 @@
 import uuid
 from decimal import Decimal
-from typing import Literal, Optional
+from enum import Enum
+from typing import Optional, Tuple, Literal
 
 import httpx
 from furl import furl
 from httpx._types import CertTypes
-from pydantic import constr, validate_arguments
+from httpx_auth import OAuth2ClientCredentials, InvalidGrantRequest, GrantNotProvided
+from pydantic import validate_arguments, constr
 
 from thanakan.services.base import BankApi
-from thanakan.services.model.scb import BaseResponse, CreateQR30Response, SCBCredentialsResponse, StatusCode, \
-    TransactionInquiryResponse, VerifyResponse
+from thanakan.services.model.scb import SCBCredentialsSCBResponse, CreateQR30SCBResponse, StatusCode, VerifySCBResponse, \
+    TransactionInquirySCBResponse, SCBDeeplinkResponse, SCBDeeplinkTransactionResponse
 
-from enum import Enum
-class SCBBaseURL(Enum, str):
+
+# from thanakan.services.model.scb import BaseResponse, CreateQR30Response, SCBCredentialsResponse, StatusCode, \
+#     TransactionInquiryResponse, VerifyResponse
+
+class SCBBaseURL(str, Enum):
     sandbox = "https://api-sandbox.partners.scb/partners/sandbox/"
     uat = 'https://api-uat.partners.scb/partners/'
 
+class SCBOAuth2ClientCredentials(OAuth2ClientCredentials):
+    def __init__(
+        self,
+        token_url: str,
+        client_id: str,
+        client_secret: str,
+        **kwargs,
+    ):
+        super().__init__(token_url, client_id, client_secret, token_field_name='accessToken', **kwargs)
+        self.data = {
+            "applicationKey": client_id,
+            "applicationSecret": client_secret,
+        }
+
+    def request_new_grant_with_post_scb_special(
+        self, url: str, data, grant_name: str, client: httpx.Client
+    ) -> Tuple[str, int]:
+        with client:
+            header = {
+                'Content-Type': 'application/json',
+                'resourceOwnerId': self.client_id,
+                'requestUId': uuid.uuid4().hex,
+                'accept-language': 'EN',
+            }
+            response = client.post(url, json=data, headers=header)
+
+            if response.is_error:
+                # As described in https://tools.ietf.org/html/rfc6749#section-5.2
+                raise InvalidGrantRequest(response)
+
+            content = response.json().get('data')
+
+        token = content.get(grant_name)
+        if not token:
+            raise GrantNotProvided(grant_name, content)
+        return token, content.get("expiresIn")
+
+    def request_new_token(self) -> tuple:
+        # As described in https://tools.ietf.org/html/rfc6749#section-4.3.3
+        token, expires_in = self.request_new_grant_with_post_scb_special(
+            self.token_url, self.data, self.token_field_name, self.client
+        )
+        # Handle both Access and Bearer tokens
+        return (
+            (self.state, token, expires_in)
+            if expires_in
+            else (self.state, token)
+        )
+
 class SCBAPI(BankApi):
-    creds: Optional[SCBCredentialsResponse] = None
+    creds: Optional[SCBCredentialsSCBResponse] = None
 
     def __init__(
         self,
-        application_key,
-        application_secret,
+        api_key,
+        api_secret,
         cert: Optional[CertTypes] = None,
-        base_url=SANDBOX_BASE_URL
+        base_url=SCBBaseURL.sandbox.value
     ):
-        self.application_key = application_key
-        self.application_secret = application_secret
+        self.api_key = api_key
+        self.api_secret = api_secret
         self.cert = cert
         self.base_url = furl(base_url)
+
         auth_url = self.base_url / "v1/oauth/token"
         client = httpx.Client(cert=self.cert)
-        # auth = OAuth2ClientCredentials(
-        #     auth_url.url,
-        #     client_id=self.consumer_id,
-        #     client_secret=self.consumer_secret,
-        #     client=client,
-        # )
+
+        auth = SCBOAuth2ClientCredentials(
+            auth_url.url,
+            client_id=self.api_key,
+            client_secret=self.api_secret,
+            client=client,
+        )
+
+        common_header = {
+            'Content-Type': 'application/json',
+            'resourceOwnerId': self.api_key,
+            'accept-language': 'EN',
+        }
         self.client = httpx.AsyncClient(
-            base_url=base_url, cert=self.cert,
-            # auth=auth
+            base_url=base_url, cert=self.cert, headers=common_header,
+            auth=auth
         )
 
         self.client_sync = httpx.Client(
-            base_url=base_url, cert=self.cert,
-            # auth=auth
+            base_url=base_url, cert=self.cert, headers=common_header,
+            auth=auth
         )
 
     async def get_token(self):
         """ get access_token from scb """
         # TODO: turn this into a  custom auth engine
         body = {
-            "applicationKey": self.application_key,
-            "applicationSecret": self.application_secret
+            "applicationKey": self.api_key,
+            "applicationSecret": self.api_secret
         }
         headers = {
             'Content-Type': 'application/json',
-            'resourceOwnerId': self.application_key,
+            'resourceOwnerId': self.api_key,
             'requestUId': uuid.uuid4().hex,
             'accept-language': 'EN',
         }
@@ -67,12 +129,11 @@ class SCBAPI(BankApi):
             auth_url.url,
             json=body,
             headers=headers,
-            # auth=(self.consumer_id, self.consumer_secret),
             cert=self.cert,
         )
 
         if r.status_code == 200:
-            self.creds = SCBCredentialsResponse.parse_raw(r.content)
+            self.creds = SCBCredentialsSCBResponse.parse_raw(r.content)
             return self.creds
         else:
             raise ConnectionError(r.json())
@@ -88,12 +149,9 @@ class SCBAPI(BankApi):
         qr_type: Literal['PP'] = "PP",
         pp_type: Literal['BILLERID'] = 'BILLERID',
     ):
+        request_unique_id = uuid.uuid4().hex
         headers = {
-            'Content-Type': 'application/json',
-            'authorization': f'Bearer {self.creds.data.access_token}',
-            'resourceOwnerId': self.application_key,
-            'requestUId': uuid.uuid4().hex,
-            'accept-language': 'EN',
+            'requestUId': request_unique_id,
         }
         payload = {
             'qrType': qr_type,
@@ -107,7 +165,8 @@ class SCBAPI(BankApi):
         r = await self.client.post('/v1/payment/qrcode/create', json=payload, headers=headers)
 
         if r.status_code == 200:
-            parsed_response = CreateQR30Response.parse_raw(r.content)
+            parsed_response = CreateQR30SCBResponse.parse_raw(r.content)
+
             if parsed_response.status.code == StatusCode.success:
                 return parsed_response
             else:
@@ -122,10 +181,7 @@ class SCBAPI(BankApi):
         sending_bank_id: str,
     ):
         headers = {
-            'authorization': f'Bearer {self.creds.data.access_token}',
-            'resourceOwnerId': self.application_key,
             'requestUId': uuid.uuid4().hex,
-            'accept-language': 'EN',
         }
 
         the_furl = furl('/v1/payment/billpayment/transactions') / transaction_ref_id
@@ -134,7 +190,7 @@ class SCBAPI(BankApi):
         r = await self.client.get(the_furl.url, headers=headers)
 
         if r.status_code == 200:
-            parsed_response = VerifyResponse.parse_raw(r.content)
+            parsed_response = VerifySCBResponse.parse_raw(r.content)
             if parsed_response.status.code == StatusCode.success:
                 return parsed_response
             else:
@@ -147,35 +203,36 @@ class SCBAPI(BankApi):
         self,
         biller_id: str,
         reference1: str,
-        reference2: str,
         transaction_date: constr(regex=r"\d{4}-\d{2}-\d{2}"),
-        amount: Decimal,
+        reference2: Optional[str] = None,
+        amount: Optional[Decimal]= None,
         event_code: Literal['00300100', '00300104'] = '00300100',
     ):
 
         the_furl = furl('/v1/payment/billpayment/inquiry')
-        the_furl.add(args={
+        args = {
             'eventCode': event_code,
             'billerId': biller_id,
             'reference1': reference1,
             'reference2': reference2,
-            'amount': f"{amount:.2f}",
+            'amount': amount,
             'transactionDate': transaction_date
-        })
+        }
+        args = {k:v  for k, v in args.items() if v is not None}
+
+
+        the_furl.add(args=args)
 
 
         headers = {
-            'authorization': f'Bearer {self.creds.data.access_token}',
-            'resourceOwnerId': self.application_key,
-            'requestUId': uuid.uuid4().hex,
-            'accept-language': 'EN',
+            'requestUId': uuid.uuid4().hex
         }
 
         r = await self.client.get(the_furl.url, headers=headers)
 
         if r.status_code == 200:
             # TODO: parse into specific object
-            parsed_response = TransactionInquiryResponse.parse_raw(r.content)
+            parsed_response = TransactionInquirySCBResponse.parse_raw(r.content)
             if parsed_response.status.code == StatusCode.success:
                 return parsed_response
             else:
@@ -186,96 +243,47 @@ class SCBAPI(BankApi):
     @validate_arguments
     async def create_deeplink(
         self,
-
+        payload: dict
     ):
-        import requests
 
-        url = "https://api-sandbox.partners.scb/partners/sandbox/v3/deeplink/transactions"
+        the_furl = furl('/v3/deeplink/transactions')
 
-        payload = "{\n\t\"transactionType\": \"PURCHASE\",\n\t\"transactionSubType\": [\"BP\", \"CCFA\", \"CCIPP\"],\n\t\"sessionValidityPeriod\": 60,\n\t\"sessionValidUntil\": \"\",\n\t\"billPayment\": {\n\t\t\"paymentAmount\": 100,\n\t\t\"accountTo\": \"123456789012345\",\n\t\t\"accountFrom\": \"123451234567890\",\n\t\t\"ref1\": \"ABCDEFGHIJ1234567890\",\n\t\t\"ref2\": \"ABCDEFGHIJ1234567890\",\n\t\t\"ref3\": \"ABCDEFGHIJ1234567890\"\n\t},\n\t\"creditCardFullAmount\": {\n\t\t\"merchantId\": \"1234567890ABCDEF\",\n\t\t\"terminalId\": \"1234ABCD\",\n\t\t\"orderReference\": \"12345678\",\n\t\t\"paymentAmount\": 100\n\t},\n\t\"installmentPaymentPlan\": {\n\t\t\"merchantId\": \"4218170000000160\",\n\t\t\"terminalId\": \"56200004\",\n\t\t\"orderReference\": \"AA100001\",\n\t\t\"paymentAmount\": 10000.00,\n\t\t\"tenor\": \"12\",\n\t\t\"ippType\": \"3\",\n\t\t\"prodCode\": \"1001\"\n\t},\n\t\"merchantMetaData\": {\n\t\t\"callbackUrl\": \"\",\n\t\t\"merchantInfo\": {\n\t\t\t\"name\": \"SANDBOX MERCHANT NAME\"\n\t\t},\n\t\t\"extraData\": {},\n\t\t\"paymentInfo\": [\n\t\t\t{\n\t\t\t\t\"type\": \"TEXT_WITH_IMAGE\",\n\t\t\t\t\"title\": \"\",\n\t\t\t\t\"header\": \"\",\n\t\t\t\t\"description\": \"\",\n\t\t\t\t\"imageUrl\": \"\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"TEXT\",\n\t\t\t\t\"title\": \"\",\n\t\t\t\t\"header\": \"\",\n\t\t\t\t\"description\": \"\"\n\t\t\t}\n\t\t]\n\t}\n}"
-        payload2 = {
-            "transactionType": "PURCHASE",
-            "transactionSubType": ["BP", "CCFA", "CCIPP"],
-            "sessionValidityPeriod": 60,
-            "sessionValidUntil": "",
-            "billPayment": {
-                "paymentAmount": 100,
-                "accountTo": "123456789012345",
-                "accountFrom": "123451234567890",
-                "ref1": "ABCDEFGHIJ1234567890",
-                "ref2": "ABCDEFGHIJ1234567890",
-                "ref3": "ABCDEFGHIJ1234567890"
-            },
-            "creditCardFullAmount": {
-                "merchantId": "1234567890ABCDEF",
-                "terminalId": "1234ABCD",
-                "orderReference": "12345678",
-                "paymentAmount": 100
-            },
-            "installmentPaymentPlan": {
-                "merchantId": "4218170000000160",
-                "terminalId": "56200004",
-                "orderReference": "AA100001",
-                "paymentAmount": 10000.00,
-                "tenor": "12",
-                "ippType": "3",
-                "prodCode": "1001"
-            },
-            "merchantMetaData": {
-                "callbackUrl": "",
-                "merchantInfo": {
-                    "name": "SANDBOX MERCHANT NAME"
-                },
-                "extraData": {},
-                "paymentInfo": [
-                    {
-                        "type": "TEXT_WITH_IMAGE",
-                        "title": "",
-                        "header": "",
-                        "description": "",
-                        "imageUrl": ""
-                    },
-                    {
-                        "type": "TEXT",
-                        "title": "",
-                        "header": "",
-                        "description": ""
-                    }
-                ]
-            }
-        }
         headers = {
-            'Content-Type': 'application/json',
-            'authorization': 'Bearer <Your Access Token>',
-            'resourceOwnerId': '<Your API Key>',
-            'requestUId': 'fe2f0e21-361b-44fd-85e8-75734184eb34',
-            'channel': 'scbeasy',
-            'accept-language': 'EN',
-            'Cookie': 'TS01e7ba6b=01e76b033c782fc88aa5838c33fda6eb0cf563d307a7b3cb6f17b84b610aecd9e7ef0d4e0fef15be922efd3884bc2a1fa1eb1404da'
+            'requestUId': uuid.uuid4().hex,
+            'channel': 'scbeasy'
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
+        r = await self.client.post(the_furl.url, headers=headers, json=payload)
 
-        print(response.text)
+        if r.status_code == 200 or r.status_code == 201:
+            parsed_response = SCBDeeplinkResponse.parse_raw(r.content)
+            if parsed_response.status.code == StatusCode.success:
+                return parsed_response
+            else:
+                raise ConnectionError(parsed_response.status.description)
+        else:
+            raise ConnectionError(r.json())
 
     @validate_arguments
     async def get_deeplink(
         self,
         transaction_ref_id: str
     ):
-        import requests
+        the_furl = furl('/v2/transactions') / transaction_ref_id
 
-        url = "https://api-sandbox.partners.scb/partners/sandbox/v2/transactions/9ed5caf2-0a38-4f5a-80b1-20e76f26b2a6"
-
-        payload = {}
         headers = {
-            'authorization': 'Bearer 50ce8329-5e66-4310-ad5e-9cc9601cb55e',
-            'resourceOwnerId': 'l76a876e9f0cf24d85820df4339641d424',
-            'requestUId': 'd03b9b3b-a275-4f78-a7c4-1475a9e65ff6',
-            'accept-language': 'EN',
-            'Cookie': 'TS01e7ba6b=01e76b033c782fc88aa5838c33fda6eb0cf563d307a7b3cb6f17b84b610aecd9e7ef0d4e0fef15be922efd3884bc2a1fa1eb1404da'
+            'requestUId': uuid.uuid4().hex,
         }
 
-        response = requests.request("GET", url, headers=headers, data=payload)
+        r = await self.client.get(the_furl.url, headers=headers)
 
-        print(response.text)
+        if r.status_code == 200:
+            parsed_response = SCBDeeplinkTransactionResponse.parse_raw(r.content)
+            if parsed_response.status.code == StatusCode.success:
+                return parsed_response
+            else:
+                raise ConnectionError(parsed_response.status.description)
+        else:
+            raise ConnectionError(r.json())
+
+

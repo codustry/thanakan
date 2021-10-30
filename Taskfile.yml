@@ -11,4 +11,8 @@ tasks:
       - echo "{{.GREETING}}"
     silent: true
 
-  dotenv: poetry run python scripts/get_dotenv.py
+  download:dotenv: poetry run python scripts/get_dotenv.py
+  store:dotenv: keybase encrypt circleoncircles -i .env -o .env.encrypted
+  decrypt:dotenv: keybase decrypt -i .env.encrypted -o .env
+
+

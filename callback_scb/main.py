@@ -7,6 +7,9 @@ from fastapi import FastAPI, Request, Body
 from pydantic import BaseModel, Field
 from fastapi_utils.api_model import APIModel
 from enum import Enum
+import uuid
+import json
+
 app = FastAPI()
 
 class PaymentConfirmation(APIModel):
@@ -57,10 +60,23 @@ class PaymentConfirmation(APIModel):
 
 @app.post("/v1/scb")
 async def handle_scb_callback(confirmation:PaymentConfirmation):
-
-    return {
+    response = {
         "resCode": "00",
         "resDesc ": "success",
         "transactionId": confirmation.transaction_id,
         "confirmId" : "abc00confirm"
     }
+    with open(f'{uuid.uuid4().hex}_response.json', 'w') as f:
+        json.dump(response, f)
+    
+    with open(f'{uuid.uuid4().hex}_confirmation.json', 'w') as f:
+        json.dump(confirmation.dict(), f)
+
+    return response
+
+@app.get("/v1/scb")
+async def ok():
+    """
+    see in the UAT dunno what it is for
+    """
+    return 'ok'

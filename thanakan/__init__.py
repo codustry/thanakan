@@ -1,4 +1,4 @@
-from .services import KBankAPI
+from .services import KBankAPI, SCBAPI, SCBBaseURL
 from .slip import SlipQRData
 
 try:
