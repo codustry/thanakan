@@ -1,7 +1,7 @@
 # thanakan
 Python Interface for Thai Bank API, KBANK, SCB, QR Code and slip verification
 
-## Pre-Requisit 
+## Pre-Requisite
 ```
 sudo apt-get install libzbar0
 ```
