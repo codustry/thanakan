@@ -63,6 +63,8 @@ pytest-asyncio = "^0.14.0"
 jupyterlab = "^3.0.8"
 pytest-docker-compose = "^3.2.1"
 uvicorn = {extras = ["standard"], version = "^0.15.0"}
+ipywidgets = "^7.6.5"
+streamlit = "^1.2.0"
 
 [tool.black]
 # https://github.com/psf/black
