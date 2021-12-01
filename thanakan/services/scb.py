@@ -79,7 +79,7 @@ class SCBAPI(BankApi):
         api_key,
         api_secret,
         cert: Optional[CertTypes] = None,
-        base_url=SCBBaseURL.sandbox.value
+        base_url=SCBBaseURL.production.value
     ):
         self.api_key = api_key
         self.api_secret = api_secret
