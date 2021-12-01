@@ -20,6 +20,7 @@ from thanakan.services.model.scb import SCBCredentialsSCBResponse, CreateQR30SCB
 class SCBBaseURL(str, Enum):
     sandbox = "https://api-sandbox.partners.scb/partners/sandbox/"
     uat = 'https://api-uat.partners.scb/partners/'
+    production = 'https://api.partners.scb/partners/'
 
 class SCBOAuth2ClientCredentials(OAuth2ClientCredentials):
     def __init__(
