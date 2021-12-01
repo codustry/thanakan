@@ -8,8 +8,8 @@ import os
 st.title("Thanakan Slip QR Code Tester for SCB")
 
 scb_api = SCBAPI(
-        api_key=os.getenv("SCB_API_KEY"),
-        api_secret=os.getenv("SCB_API_SECRET"),
+        api_key=st.secrets["SCB_API_KEY"],
+        api_secret=st.secrets["SCB_API_SECRET"],
         base_url=SCBBaseURL.production.value
     )
 
