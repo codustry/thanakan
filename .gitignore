@@ -638,3 +638,16 @@ tests/test_kbank_api/slip-test/6.2.jpg
 tests/test_kbank_api/slip-test/6.3.jpg
 callback_scb/sample/*.json
 callback_scb/sample/*.jpg
+playground/subjects/IMG_0119.jpg
+playground/subjects/IMG_0122.jpg
+playground/subjects/IMG_0123.jpg
+playground/subjects/IMG_0126.jpg
+playground/subjects/IMG_0127.jpg
+playground/subjects/IMG_0135.jpg
+playground/subjects/IMG_0138.jpg
+playground/subjects/IMG_0139.jpg
+playground/subjects/IMG_0158.jpg
+playground/subjects/kbank2kbank.jpg
+playground/subjects/kbankpay.jpg
+playground/subjects/scb2scb.jpg
+playground/subjects/scb3kbank.jpg
