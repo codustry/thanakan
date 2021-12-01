@@ -651,3 +651,4 @@ playground/subjects/kbank2kbank.jpg
 playground/subjects/kbankpay.jpg
 playground/subjects/scb2scb.jpg
 playground/subjects/scb3kbank.jpg
+playground/.streamlit/secrets.toml
