@@ -11,3 +11,4 @@ tasks:
       - echo "{{.GREETING}}"
     silent: true
   save: keybase encrypt circleoncircles -i .streamlit/secrets.toml -o .streamlit/secrets.toml.encrypted
+  load: keybase decrypt circleoncircles -i .streamlit/secrets.toml.encrypted -o .streamlit/secrets.toml
