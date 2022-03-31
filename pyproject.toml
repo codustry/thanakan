@@ -36,7 +36,7 @@ pydantic = "^1.7.3"
 crccheck = "^1.0"
 httpx = {extras = ["http2"], version = "^0.16.1"}
 parse-with-dot-access = "^1.18.0"
-locate = "^0.0.1"
+locate = ">=0.0.1,<1.1.1"
 furl = "^2.1.0"
 fastapi-utils = "^0.2.1"
 httpx-auth = "^0.8.0"
