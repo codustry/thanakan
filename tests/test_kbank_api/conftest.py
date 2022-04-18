@@ -52,6 +52,7 @@ def consumer_id():
 def consumer_secret():
     return os.getenv("KBANK_CONSUMER_SECRET")
 
+
 @pytest.fixture
 def deeplink_payload():
     return {
@@ -64,21 +65,21 @@ def deeplink_payload():
             "accountFrom": "123451234567890",
             "ref1": "ABC",
             "ref2": "0992866666",
-            "ref3": "COD"
+            "ref3": "COD",
         },
         "merchantMetaData": {
             "callbackUrl": "https://1b1b5d84-513c-40d0-b5f4-c6469142f156.mock.pstmn.io/post",
             "merchantInfo": {
                 "name": "Gebwai (เก็บไว้)",
-                "urlLogo": "https://ik.imagekit.io/codustry/gebwai/webapp/09122021/hero-greeting_-WTYLgJcb.png?updatedAt=1631423833025"
+                "urlLogo": "https://ik.imagekit.io/codustry/gebwai/webapp/09122021/hero-greeting_-WTYLgJcb.png?updatedAt=1631423833025",
             },
             "extraData": {},
             "paymentInfo": [
                 {
                     "type": "TEXT",
                     "title": "เก็บไว้ขอบคุณครับ",
-                    "description": "พวกเราจะพัฒนาระบบอย่างต่อเนื่อง"
+                    "description": "พวกเราจะพัฒนาระบบอย่างต่อเนื่อง",
                 }
-            ]
-        }
+            ],
+        },
     }

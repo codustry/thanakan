@@ -1,11 +1,11 @@
 from typing import Dict, List, Literal, Union
 
-from pydantic import Field
 from datetime import datetime
 from decimal import Decimal
 from enum import IntEnum
 
 from fastapi_utils.api_model import APIModel
+from pydantic import Field
 from thanakan.models.bankcode import AnyBankCode, BankCode
 from thanakan.services.model.common import ProxyType, SlipData
 
@@ -57,19 +57,25 @@ class VerifySCBResponse(BaseSCBResponse):
 class TransactionInquirySCBResponse(BaseSCBResponse):
     data: List[Dict]
 
+
 class SCBDeeplinkData(APIModel):
     transaction_id: str
     deeplink_url: str
     user_ref_id: str
 
+
 class SCBDeeplinkResponse(BaseSCBResponse):
     data: SCBDeeplinkData
+
 
 class SCBDeeplinkTransactionResponse(BaseSCBResponse):
     data: Dict
 
+
 class WebhookBody(APIModel):
-    transaction_date_and_time: datetime = Field(..., alias='transactionDateandTime')
+    transaction_date_and_time: datetime = Field(
+        ..., alias="transactionDateandTime"
+    )
     sending_bank_code: Union[BankCode, AnyBankCode]
     payer_name: str
     payer_proxy_type: ProxyType

@@ -114,7 +114,7 @@ check-style:
 
 .PHONY: codestyle
 codestyle:
-	-poetry run pyupgrade --py38-plus **/*.py
+	-poetry run pyupgrade --py39-plus **/*.py
 	poetry run isort --settings-path pyproject.toml **/*.py
 	poetry run black --config pyproject.toml ./
 

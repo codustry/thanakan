@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 from google.cloud import secretmanager_v1
-
 from thanakan import SCBAPI, SCBBaseURL
 
 
@@ -17,11 +16,10 @@ def api_key():
 def api_secret():
     return os.getenv("SCB_UAT_API_SECRET")
 
+
 @pytest.fixture
 def scb_api(api_key, api_secret):
     s = SCBAPI(
-        api_key=api_key,
-        api_secret=api_secret,
-        base_url=SCBBaseURL.uat.value
+        api_key=api_key, api_secret=api_secret, base_url=SCBBaseURL.uat.value
     )
     return s
