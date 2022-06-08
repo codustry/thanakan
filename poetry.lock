@@ -594,7 +594,7 @@ gitdb = ">=4.0.1,<5"
 
 [[package]]
 name = "google-api-core"
-version = "2.7.2"
+version = "2.8.1"
 description = "Google API client core library"
 category = "main"
 optional = false
@@ -602,33 +602,34 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 google-auth = ">=1.25.0,<3.0dev"
-googleapis-common-protos = ">=1.52.0,<2.0dev"
+googleapis-common-protos = ">=1.56.2,<2.0dev"
 grpcio = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
 grpcio-status = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
-protobuf = ">=3.12.0"
+protobuf = ">=3.15.0,<4.0.0dev"
 requests = ">=2.18.0,<3.0.0dev"
 
 [package.extras]
 grpc = ["grpcio (>=1.33.2,<2.0dev)", "grpcio-status (>=1.33.2,<2.0dev)"]
-grpcgcp = ["grpcio-gcp (>=0.2.2)"]
-grpcio-gcp = ["grpcio-gcp (>=0.2.2)"]
+grpcgcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
+grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-auth"
-version = "1.35.0"
+version = "2.7.0"
 description = "Google Authentication Library"
 category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 
 [package.dependencies]
-cachetools = ">=2.0.0,<5.0"
+cachetools = ">=2.0.0,<6.0"
 pyasn1-modules = ">=0.2.1"
 rsa = {version = ">=3.1.4,<5", markers = "python_version >= \"3.6\""}
 six = ">=1.9.0"
 
 [package.extras]
 aiohttp = ["requests (>=2.20.0,<3.0.0dev)", "aiohttp (>=3.6.2,<4.0.0dev)"]
+enterprise_cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
 pyopenssl = ["pyopenssl (>=20.0.0)"]
 reauth = ["pyu2f (>=0.1.5)"]
 
@@ -662,18 +663,18 @@ libcst = ["libcst (>=0.2.5)"]
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.56.0"
+version = "1.56.2"
 description = "Common protobufs used in Google APIs"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-grpcio = {version = ">=1.0.0", optional = true, markers = "extra == \"grpc\""}
-protobuf = ">=3.12.0"
+grpcio = {version = ">=1.0.0,<2.0.0dev", optional = true, markers = "extra == \"grpc\""}
+protobuf = ">=3.15.0,<4.0.0dev"
 
 [package.extras]
-grpc = ["grpcio (>=1.0.0)"]
+grpc = ["grpcio (>=1.0.0,<2.0.0dev)"]
 
 [[package]]
 name = "greenlet"
@@ -2807,12 +2808,12 @@ gitpython = [
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 google-api-core = [
-    {file = "google-api-core-2.7.2.tar.gz", hash = "sha256:65480309a7437f739e4476da037af02a3ec8263f1d1f89f72bbdc8f54fe402d2"},
-    {file = "google_api_core-2.7.2-py3-none-any.whl", hash = "sha256:8fcbe52dc129fd83dca4e638a76f22b3a11579c493e643134e50e9870b233302"},
+    {file = "google-api-core-2.8.1.tar.gz", hash = "sha256:958024c6aa3460b08f35741231076a4dd9a4c819a6a39d44da9627febe8b28f0"},
+    {file = "google_api_core-2.8.1-py3-none-any.whl", hash = "sha256:ce1daa49644b50398093d2a9ad886501aa845e2602af70c3001b9f402a9d7359"},
 ]
 google-auth = [
-    {file = "google-auth-1.35.0.tar.gz", hash = "sha256:b7033be9028c188ee30200b204ea00ed82ea1162e8ac1df4aa6ded19a191d88e"},
-    {file = "google_auth-1.35.0-py2.py3-none-any.whl", hash = "sha256:997516b42ecb5b63e8d80f5632c1a61dddf41d2a4c2748057837e06e00014258"},
+    {file = "google-auth-2.7.0.tar.gz", hash = "sha256:8a954960f852d5f19e6af14dd8e75c20159609e85d8db37e4013cc8c3824a7e1"},
+    {file = "google_auth-2.7.0-py2.py3-none-any.whl", hash = "sha256:df549a1433108801b11bdcc0e312eaf0d5f0500db42f0523e4d65c78722e8475"},
 ]
 google-cloud-documentai = [
     {file = "google-cloud-documentai-1.4.0.tar.gz", hash = "sha256:f5d995fd2321dcdf0a708065afe0b81d3ec4a36dd3783741b3705026aee99847"},
@@ -2823,8 +2824,8 @@ google-cloud-secret-manager = [
     {file = "google_cloud_secret_manager-2.10.0-py2.py3-none-any.whl", hash = "sha256:4bc9e8ce0592653c5ef782712c3d7f316d6d3db9bc820c9a1c9b2db6f4e84c6c"},
 ]
 googleapis-common-protos = [
-    {file = "googleapis-common-protos-1.56.0.tar.gz", hash = "sha256:4007500795bcfc269d279f0f7d253ae18d6dc1ff5d5a73613ffe452038b1ec5f"},
-    {file = "googleapis_common_protos-1.56.0-py2.py3-none-any.whl", hash = "sha256:60220c89b8bd5272159bed4929ecdc1243ae1f73437883a499a44a1cbc084086"},
+    {file = "googleapis-common-protos-1.56.2.tar.gz", hash = "sha256:b09b56f5463070c2153753ef123f07d2e49235e89148e9b2459ec8ed2f68d7d3"},
+    {file = "googleapis_common_protos-1.56.2-py2.py3-none-any.whl", hash = "sha256:023eaea9d8c1cceccd9587c6af6c20f33eeeb05d4148670f2b0322dc1511700c"},
 ]
 greenlet = [
     {file = "greenlet-1.1.2-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:58df5c2a0e293bf665a51f8a100d3e9956febfbf1d9aaf8c0677cf70218910c6"},
@@ -3264,6 +3265,7 @@ numpy = [
     {file = "numpy-1.22.3.zip", hash = "sha256:dbc7601a3b7472d559dc7b933b18b4b66f9aa7452c120e87dfb33d02008c8a18"},
 ]
 onepasswordconnectsdk = [
+    {file = "onepasswordconnectsdk-1.2.0-py3-none-any.whl", hash = "sha256:7df460d516b262fae7df072bb3dbe5bf15545d50b2550a8228c33110568343f1"},
     {file = "onepasswordconnectsdk-1.2.0.tar.gz", hash = "sha256:920f5e18d3babc46b6764b8d27e66a5073b34707a8a35ce410add0f1911fa2ea"},
 ]
 orderedmultidict = [
