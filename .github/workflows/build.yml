@@ -32,7 +32,7 @@ jobs:
         virtualenvs-in-project: false
 
     - name: Set up cache
-      uses: actions/cache@v3.0.1
+      uses: actions/cache@v3.0.4
       with:
         path: .venv
         key: venv-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
